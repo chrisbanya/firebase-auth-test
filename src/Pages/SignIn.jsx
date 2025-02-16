@@ -2,7 +2,7 @@ import { useState } from "react";
 import { CiMail } from "react-icons/ci";
 import { LiaEyeSolid } from "react-icons/lia";
 import { PiEyeClosedBold } from "react-icons/pi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {auth} from '../firebase/config'
 import { signInWithEmailAndPassword } from "firebase/auth";
 
@@ -10,6 +10,7 @@ export default function SignIn() {
   const [showPassword, setshowPassword] = useState(false);
   const [userCredentials, setUserCredentials] = useState({})
   const [error, setError] = useState("")
+  const navigate = useNavigate()
    
     function handleCredentials(e) {
       setUserCredentials({...userCredentials, [e.target.name]: e.target.value})
@@ -25,11 +26,10 @@ export default function SignIn() {
     signInWithEmailAndPassword(auth, userCredentials.email, userCredentials.password)
   .then((userCredential) => {
     const user = userCredential.user;
-     console.log(user)
+    //so apparently the below process works b/cos firebase auth object maintains auth state globally across the app
+     navigate("/view")
   })
   .catch((error) => {
-    // const errorCode = error.code;
-    // const errorMessage = error.message;
     setError(error.message)
     console.log(error.message)
   })
@@ -38,7 +38,10 @@ export default function SignIn() {
     <div>
       <div className="font-[sans-serif] bg-white">
         <div className="grid lg:grid-cols-4 md:grid-cols-3 items-center">
-          <form className="lg:col-span-3 md:col-span-2 max-w-lg w-full p-6 mx-auto">
+          <form
+            onSubmit={handleSignIn }
+            className="lg:col-span-3 md:col-span-2 max-w-lg w-full p-6 mx-auto"
+          >
             <div className="mb-12">
               <h3 className="text-gray-800 text-4xl font-bold">Sign In</h3>
               <p className="text-gray-600 text-sm mt-6 leading-relaxed">
@@ -102,7 +105,8 @@ export default function SignIn() {
                 </label>
               </div>
               <div>
-                <Link to="/passwordReset"
+                <Link
+                  to="/passwordReset"
                   className="text-blue-600 font-semibold text-sm hover:underline"
                 >
                   Forgot Password?
@@ -113,7 +117,6 @@ export default function SignIn() {
             <div className="mt-12">
               <button
                 type="submit"
-                onClick={handleSignIn}
                 className="w-full shadow-xl py-2.5 px-4 text-sm tracking-wider font-semibold rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none"
               >
                 Sign in
