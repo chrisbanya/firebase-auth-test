@@ -5,16 +5,20 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { auth } from "../firebase/config";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function Register() {
   const [showPassword, setshowPassword] = useState(false);
   const [userCredentials, setUserCredentials] = useState({});
   const [error, setError] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
   function handleCredentials(e) {
     setUserCredentials({ ...userCredentials, [e.target.name]: e.target.value });
    
   }
+
+  // implement redirect to log in page and react toast after successful reg
   function handleshowPassword(e) {
     e.stopPropagation();
     setshowPassword(!showPassword);
@@ -22,6 +26,7 @@ export default function Register() {
   function handleRegister(e) {
     e.preventDefault();
     setError("");
+    setIsLoading(true)
     createUserWithEmailAndPassword(
       auth,
       userCredentials.email,
@@ -30,16 +35,19 @@ export default function Register() {
       .then((userCredential) => {
         // Signed up
         const user = userCredential.user;
+        setIsLoading(false)
         
       })
       .catch((error) => {
         setError(error.message);
+        setIsLoading(false)
         
       });
   }
   return (
     <div>
       <div className="font-[sans-serif] bg-white">
+        {isLoading && <LoadingSpinner/>}
         <div className="grid lg:grid-cols-4 md:grid-cols-3 items-center">
           <form
             onSubmit={handleRegister}
@@ -62,6 +70,7 @@ export default function Register() {
                 type="email"
                 onChange={handleCredentials}
                 placeholder="Enter email"
+                required
                 className="px-4 py-3.5 bg-white w-full text-sm border-2 border-gray-200 focus:border-blue-600 rounded-md outline-none"
               />
               <CiMail className="w-[18px] h-[18px] absolute right-4" />
@@ -75,6 +84,7 @@ export default function Register() {
                 name="password"
                 type={showPassword ? "text" : "password"}
                 onChange={handleCredentials}
+                required
                 placeholder="Enter password"
                 className="px-4 py-3.5 bg-white w-full text-sm border-2 border-gray-200 focus:border-blue-600 rounded-md outline-none"
               />
