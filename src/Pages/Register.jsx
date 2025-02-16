@@ -7,42 +7,44 @@ import { auth } from "../firebase/config";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 
 export default function Register() {
-      const [showPassword, setshowPassword] = useState(false);
-      const [userCredentials, setUserCredentials] = useState({})
-      const [error, setError] = useState("")
+  const [showPassword, setshowPassword] = useState(false);
+  const [userCredentials, setUserCredentials] = useState({});
+  const [error, setError] = useState("");
 
-      function handleCredentials(e) {
-        setUserCredentials({...userCredentials, [e.target.name]: e.target.value})
-        // console.log(userCredentials)
-       
-      }
-    function handleshowPassword(e) {
-        e.stopPropagation();
-        setshowPassword(!showPassword);
-    }
-    function handleRegister(e) {
-        e.preventDefault();
-        setError("")
-        createUserWithEmailAndPassword(auth, userCredentials.email, userCredentials.password)
-          .then((userCredential) => {
-            // Signed up
-            const user = userCredential.user;
-            console.log(user)
-         
-           
-          })
-          .catch((error) => {
-            setError(error.message)
-            console.log(error.message)
-           
-          
-          });
-    }
+  function handleCredentials(e) {
+    setUserCredentials({ ...userCredentials, [e.target.name]: e.target.value });
+   
+  }
+  function handleshowPassword(e) {
+    e.stopPropagation();
+    setshowPassword(!showPassword);
+  }
+  function handleRegister(e) {
+    e.preventDefault();
+    setError("");
+    createUserWithEmailAndPassword(
+      auth,
+      userCredentials.email,
+      userCredentials.password
+    )
+      .then((userCredential) => {
+        // Signed up
+        const user = userCredential.user;
+        
+      })
+      .catch((error) => {
+        setError(error.message);
+        
+      });
+  }
   return (
     <div>
       <div className="font-[sans-serif] bg-white">
         <div className="grid lg:grid-cols-4 md:grid-cols-3 items-center">
-          <form className="lg:col-span-3 md:col-span-2 max-w-lg w-full p-6 mx-auto">
+          <form
+            onSubmit={handleRegister}
+            className="lg:col-span-3 md:col-span-2 max-w-lg w-full p-6 mx-auto"
+          >
             <div className="mb-12">
               <h3 className="text-gray-800 text-4xl font-bold">Register</h3>
               <p className="text-gray-600 text-sm mt-6 leading-relaxed">
@@ -91,44 +93,22 @@ export default function Register() {
             </div>
             {error && (
               <ul className="mt-2 px-4 grid sm:grid-cols-2 gap-y-1 gap-x-6 w-max list-disc">
-                <li className="text-xs text-orange-500">minimum 6 characters</li>
+                <li className="text-xs text-orange-500">
+                  minimum 6 characters
+                </li>
                 <li className="text-xs text-orange-500">
                   one uppercase characters
                 </li>
-                <li className="text-xs text-orange-500">one special characters</li>
+                <li className="text-xs text-orange-500">
+                  one special characters
+                </li>
                 <li className="text-xs text-orange-500">one number</li>
               </ul>
             )}
 
-            {/* <div className="flex flex-wrap items-center justify-between gap-4 mt-4">
-              <div className="flex items-center">
-                <input
-                  id="remember-me"
-                  name="remember-me"
-                  type="checkbox"
-                  className="h-4 w-4 shrink-0 text-blue-600 focus:ring-blue-500 border-gray-300 rounded-md"
-                />
-                <label
-                  htmlFor="remember-me"
-                  className="ml-3 block text-sm text-gray-800"
-                >
-                  Remember me
-                </label>
-              </div>
-              <div>
-                <a
-                  href="#"
-                  className="text-blue-600 font-semibold text-sm hover:underline"
-                >
-                  Forgot Password?
-                </a>
-              </div>
-            </div> */}
-
             <div className="mt-12">
               <button
                 type="submit"
-                onClick={handleRegister}
                 className="w-full shadow-xl py-2.5 px-4 text-sm tracking-wider font-semibold rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none"
               >
                 Register
@@ -138,7 +118,12 @@ export default function Register() {
 
             <p className="text-sm text-gray-600 mt-8 text-center ">
               Already have an account?
-              <Link to="/signIn">Sign in</Link>
+              <Link
+                className="text-blue-600 font-semibold hover:underline ml-1 whitespace-nowrap"
+                to="/signIn"
+              >
+                Sign in
+              </Link>
             </p>
           </form>
 
@@ -175,4 +160,4 @@ export default function Register() {
       </div>
     </div>
   );
-    }
+}
