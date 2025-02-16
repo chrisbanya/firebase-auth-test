@@ -3,18 +3,20 @@ import { CiMail } from "react-icons/ci";
 import { LiaEyeSolid } from "react-icons/lia";
 import { PiEyeClosedBold } from "react-icons/pi";
 import { Link, useNavigate } from "react-router-dom";
-import {auth} from '../firebase/config'
+import { auth } from "../firebase/config";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function SignIn() {
   const [showPassword, setshowPassword] = useState(false);
-  const [userCredentials, setUserCredentials] = useState({})
-  const [error, setError] = useState("")
-  const navigate = useNavigate()
-   
-    function handleCredentials(e) {
-      setUserCredentials({...userCredentials, [e.target.name]: e.target.value})
-      }
+  const [userCredentials, setUserCredentials] = useState({});
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
+  function handleCredentials(e) {
+    setUserCredentials({ ...userCredentials, [e.target.name]: e.target.value });
+  }
 
   function handleshowPassword(e) {
     e.stopPropagation();
@@ -22,24 +24,31 @@ export default function SignIn() {
   }
   function handleSignIn(e) {
     e.preventDefault();
-    setError("")
-    signInWithEmailAndPassword(auth, userCredentials.email, userCredentials.password)
-  .then((userCredential) => {
-    const user = userCredential.user;
-    //so apparently the below process works b/cos firebase auth object maintains auth state globally across the app
-     navigate("/view")
-  })
-  .catch((error) => {
-    setError(error.message)
-    console.log(error.message)
-  })
-}
+    setError("");
+    setIsLoading(true);
+    signInWithEmailAndPassword(
+      auth,
+      userCredentials.email,
+      userCredentials.password
+    )
+      .then((userCredential) => {
+        //so apparently the below process works b/cos firebase auth object maintains auth state globally across the app
+        const user = userCredential.user;
+        setIsLoading(false);
+        navigate("/view");
+      })
+      .catch((error) => {
+        setError(error.message);
+        setIsLoading(false);
+      });
+  }
   return (
     <div>
+      {isLoading && <LoadingSpinner/> }
       <div className="font-[sans-serif] bg-white">
         <div className="grid lg:grid-cols-4 md:grid-cols-3 items-center">
           <form
-            onSubmit={handleSignIn }
+            onSubmit={handleSignIn}
             className="lg:col-span-3 md:col-span-2 max-w-lg w-full p-6 mx-auto"
           >
             <div className="mb-12">
@@ -121,13 +130,14 @@ export default function SignIn() {
               >
                 Sign in
               </button>
+
               {error && (
                 <p className="mt-2 text-red-600 text-center">{error}</p>
               )}
             </div>
 
             <p className="text-sm text-gray-600 mt-8 text-center">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link
                 to="/register"
                 className="text-blue-600 font-semibold hover:underline ml-1 whitespace-nowrap"
@@ -149,8 +159,8 @@ export default function SignIn() {
             <div>
               <h4 className="text-white text-lg font-semibold">Remember Me</h4>
               <p className="text-[13px] text-white mt-2">
-                Enable the "Remember Me" option for a seamless login experience
-                in future sessions.
+                Enable the &quot;Remember Me&quot; option for a seamless login
+                experience in future sessions.
               </p>
             </div>
             <div>
@@ -158,8 +168,8 @@ export default function SignIn() {
                 Forgot Password?
               </h4>
               <p className="text-[13px] text-white mt-2">
-                Easily recover your account by clicking on the "Forgot
-                Password?" link.
+                Easily recover your account by clicking on the &quot;Forgot
+                Password?&quot; link.
               </p>
             </div>
           </div>
