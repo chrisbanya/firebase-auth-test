@@ -42,7 +42,7 @@ export default function PasswordReset() {
   return (
     <div>
       <div className="fixed inset-0 p-4 flex flex-wrap justify-center items-center w-full h-full z-[1000] before:fixed before:inset-0 before:w-full before:h-full before:bg-[rgba(0,0,0,0.5)] overflow-auto font-[sans-serif]">
-        <form>
+        <form onSubmit={handlePasswordReset}>
           <div className="w-full max-w-lg bg-white shadow-lg rounded-md p-8 relative">
             <Link to="/signIn">
               <RiCloseLargeLine className="w-3.5 cursor-pointer shrink-0 fill-gray-800 hover:fill-red-500 float-right" />
@@ -58,6 +58,7 @@ export default function PasswordReset() {
               <input
                 type="email"
                 name="email"
+                required
                 onChange={handleCredentials}
                 placeholder="Enter Email"
                 className="px-4 py-2.5 mt-6 bg-[#f0f1f2] text-gray-800 w-full text-sm focus:bg-transparent outline-blue-600 rounded-md"
@@ -65,7 +66,6 @@ export default function PasswordReset() {
             </div>
             <button
               type="submit"
-              onClick={handlePasswordReset}
               className="px-5 py-2.5 w-full rounded-md text-white text-sm outline-none bg-blue-600 hover:bg-blue-700"
             >
               Email me
