@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../firebase/config";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import LoadingSpinner from "../components/LoadingSpinner";
+import Button from "../components/Button";
 
 export default function SignIn() {
   const [showPassword, setshowPassword] = useState(false);
@@ -124,12 +125,9 @@ export default function SignIn() {
             </div>
 
             <div className="mt-12">
-              <button
-                type="submit"
-                className="w-full shadow-xl py-2.5 px-4 text-sm tracking-wider font-semibold rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none"
-              >
+              <Button>
                 Sign in
-              </button>
+              </Button>
 
               {error && (
                 <p className="mt-2 text-red-600 text-center">{error}</p>
