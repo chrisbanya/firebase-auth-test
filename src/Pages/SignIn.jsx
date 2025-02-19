@@ -4,12 +4,18 @@ import { LiaEyeSolid } from "react-icons/lia";
 import { PiEyeClosedBold } from "react-icons/pi";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../firebase/config";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  setPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence,
+} from "firebase/auth";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Button from "../components/Button";
 
 export default function SignIn() {
   const [showPassword, setshowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [userCredentials, setUserCredentials] = useState({});
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -23,18 +29,26 @@ export default function SignIn() {
     e.stopPropagation();
     setshowPassword(!showPassword);
   }
+  function handleRememberMe(e) {
+    setRememberMe(e.target.checked);
+  }
   function handleSignIn(e) {
     e.preventDefault();
     setError("");
     setIsLoading(true);
-    signInWithEmailAndPassword(
+    setPersistence(
       auth,
-      userCredentials.email,
-      userCredentials.password
+      rememberMe ? browserLocalPersistence : browserSessionPersistence
     )
-      .then((userCredential) => {
+      .then(() => {
+        return signInWithEmailAndPassword(
+          auth,
+          userCredentials.email,
+          userCredentials.password
+        );
+      })
+      .then(() => {
         //so apparently the below process works b/cos firebase auth object maintains auth state globally across the app
-        const user = userCredential.user;
         setIsLoading(false);
         navigate("/view");
       })
@@ -45,7 +59,7 @@ export default function SignIn() {
   }
   return (
     <div>
-      {isLoading && <LoadingSpinner/> }
+      {isLoading && <LoadingSpinner />}
       <div className="font-[sans-serif] bg-white">
         <div className="grid lg:grid-cols-4 md:grid-cols-3 items-center">
           <form
@@ -105,6 +119,8 @@ export default function SignIn() {
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
+                  checked={rememberMe}
+                  onChange={handleRememberMe}
                   className="h-4 w-4 shrink-0 text-blue-600 focus:ring-blue-500 border-gray-300 rounded-md"
                 />
                 <label
@@ -125,9 +141,7 @@ export default function SignIn() {
             </div>
 
             <div className="mt-12">
-              <Button>
-                Sign in
-              </Button>
+              <Button>Sign in</Button>
 
               {error && (
                 <p className="mt-2 text-red-600 text-center">{error}</p>
