@@ -13,6 +13,11 @@ import {
 import LoadingSpinner from "../components/LoadingSpinner";
 import Button from "../components/Button";
 
+const preloadAuthPages = () => {
+  import("./Register")
+  import("./PasswordReset")
+}
+
 export default function SignIn() {
   const [showPassword, setshowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -134,6 +139,8 @@ export default function SignIn() {
                 <Link
                   to="/passwordReset"
                   className="text-blue-600 font-semibold text-sm hover:underline"
+                  onMouseEnter={preloadAuthPages}
+                  onFocus={preloadAuthPages}
                 >
                   Forgot Password?
                 </Link>
@@ -152,6 +159,8 @@ export default function SignIn() {
               Don&apos;t have an account?{" "}
               <Link
                 to="/register"
+                onMouseEnter={preloadAuthPages}
+                  onFocus={preloadAuthPages}
                 className="text-blue-600 font-semibold hover:underline ml-1 whitespace-nowrap"
               >
                 Register here
