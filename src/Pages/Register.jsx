@@ -7,27 +7,33 @@ import { auth } from "../firebase/config";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Button from "../components/Button";
+import { Slide, ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
   const [showPassword, setshowPassword] = useState(false);
   const [userCredentials, setUserCredentials] = useState({});
   const [error, setError] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate()
+  const notify = () =>
+    toast.success("Success! Your registration is complete. Welcome aboard!");
 
   function handleCredentials(e) {
+    setError("")
     setUserCredentials({ ...userCredentials, [e.target.name]: e.target.value });
-   
   }
 
-  // implement redirect to log in page and react toast after successful reg
+
   function handleshowPassword(e) {
     e.stopPropagation();
     setshowPassword(!showPassword);
   }
   function handleRegister(e) {
     e.preventDefault();
-    setError("");
-    setIsLoading(true)
+    // setError("");
+    setIsLoading(true);
     createUserWithEmailAndPassword(
       auth,
       userCredentials.email,
@@ -36,19 +42,20 @@ export default function Register() {
       .then((userCredential) => {
         // Signed up
         const user = userCredential.user;
-        setIsLoading(false)
-        
+        setIsLoading(false);
+        notify()
+        setTimeout(() => navigate("/signIn"), 3000 )
       })
       .catch((error) => {
         setError(error.message);
-        setIsLoading(false)
-        
+        setIsLoading(false);
       });
   }
   return (
     <div>
       <div className="font-[sans-serif] bg-white">
-        {isLoading && <LoadingSpinner/>}
+        {isLoading && <LoadingSpinner /> }
+        <ToastContainer transition={Slide} draggablePercent={50}/>
         <div className="grid lg:grid-cols-4 md:grid-cols-3 items-center">
           <form
             onSubmit={handleRegister}
@@ -118,9 +125,7 @@ export default function Register() {
             )}
 
             <div className="mt-12">
-              <Button>
-                Register
-              </Button>
+              <Button>Register</Button>
             </div>
             {error && <p className="mt-2 text-red-600 text-center">{error}</p>}
 
@@ -152,15 +157,6 @@ export default function Register() {
               <p className="text-[13px] text-white mt-2">
                 Our registration process is designed to be straightforward and
                 secure. We prioritize your privacy and data security.
-              </p>
-            </div>
-            <div>
-              <h4 className="text-white text-lg font-semibold">
-                Terms and Conditions Agreement
-              </h4>
-              <p className="text-[13px] text-white mt-2">
-                We require users to accept our terms and conditions of our
-                service during registration.
               </p>
             </div>
           </div>
