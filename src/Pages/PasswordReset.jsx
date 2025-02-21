@@ -3,20 +3,29 @@ import { auth } from "../firebase/config";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { Bounce, ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function PasswordReset() {
   const [userCredentials, setUserCredentials] = useState({});
   const [error, setError] = useState("");
-  const navigate = useNavigate()
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const notify = () =>
+    toast.info(
+      "Password reset link sent! Check your email to reset your password."
+    );
 
   const validateCredentials = () => {
     if (!userCredentials.email) {
-        return false
+      return false;
     }
-    return true
-  }
+    return true;
+  };
 
   function handleCredentials(e) {
+    setError("");
     setUserCredentials({
       ...userCredentials,
       [e.target.name]: e.target.value,
@@ -24,24 +33,27 @@ export default function PasswordReset() {
   }
 
   function handlePasswordReset(e) {
-    e.preventDefault()
+    e.preventDefault();
     if (!validateCredentials()) return;
-    setError("")
-      sendPasswordResetEmail(auth, userCredentials.email)
-        .then(() => {
-        setTimeout(() => navigate("/signIn"), 3000);
-        })
-        .catch((error) => {
-          setError(error.message)
-          
-        });
-        
-  }
+    setIsLoading(true);
 
+    sendPasswordResetEmail(auth, userCredentials.email)
+      .then(() => {
+        notify();
+        setTimeout(() => navigate("/signIn"), 4000);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setError(error.message);
+        setIsLoading(false);
+      });
+  }
 
   return (
     <div>
       <div className="fixed inset-0 p-4 flex flex-wrap justify-center items-center w-full h-full z-[1000] before:fixed before:inset-0 before:w-full before:h-full before:bg-[rgba(0,0,0,0.5)] overflow-auto font-[sans-serif]">
+        <ToastContainer transition={Bounce} draggablePercent={50} />
+        {isLoading && <LoadingSpinner />}
         <form onSubmit={handlePasswordReset}>
           <div className="w-full max-w-lg bg-white shadow-lg rounded-md p-8 relative">
             <Link to="/signIn">
