@@ -8,6 +8,5 @@ export default defineConfig({
   base: "/", // Important for static asset paths
   build: {
     outDir: "dist", //must match Vercel's output directory
-    sourcemap: true, 
   },
 });
